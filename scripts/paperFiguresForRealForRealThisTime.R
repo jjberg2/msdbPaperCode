@@ -1,4 +1,13 @@
-setwd('~/Dropbox/msdbPaper')
+#setwd('~/Dropbox/msdbPaper')
+dir_path <- "figures/paperFiguresForRealForRealThisTime"
+
+# Check if the directory exists
+if (!dir.exists(dir_path)) {
+  dir.create(dir_path, recursive = TRUE, showWarnings = TRUE)
+  message(paste("Created directory:", dir_path))
+} else {
+  message(paste("Directory already exists:", dir_path))
+}
 #### Figure 1 ####
 {
     rm(list=ls())
@@ -3443,7 +3452,7 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
            labels = c('0', '0.004', '0.008'))
       mtext(
         side = 2 ,
-        text = expression(paste('Small Effect ' , gamma[S] , sep ='')),
+        text = expression( gamma(alpha[S]) ),
         line = 1.5,
         cex = 0.7,
       )
@@ -3519,8 +3528,9 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
   
   #### skew inflation factor ####
   {
+    my.gs <- matrix(NA, nrow = n.pts + 1, ncol = length(L))
     png(
-      'figures/paperFiguresForRealForRealThisTime/suppFigures/twoEffectVarSFigure.png',
+      'figures/paperFiguresForRealForRealThisTime/suppFigures/twoEffectPrevInflateSFigure.png',
       height = 17.75 ,
       width = 17.75,
       units = 'cm',
@@ -3587,6 +3597,7 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
       prev <- lapply(soln,function(X)X[,'prev'])
       Vt <- lapply(soln,function(X)X[,'Vt'])
       norm.prev <- lapply(soln,function(X)X[,'norm.prev'])
+      prev.inflate <- mapply(function(PREV,NORMPREV) PREV/NORMPREV , PREV = prev,NORMPREV = norm.prev,SIMPLIFY = FALSE)
       
       my.cols <- wes_palette('Darjeeling2')
       if(k == 1){
@@ -3602,36 +3613,30 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
       }
       # y.max <- max(unlist(prev))
       
-      keep.Vts <- list()
+      keep.inflates <- list()
       for (j in seq_along(L)) {
         plot.these <- which(prev[[j]] > 0 & lambda[[j]] < 3 )
-        keep.Vts[[j]] <- Vt[[j]][plot.these]
+        keep.inflates[[j]] <- prev.inflate[[j]][plot.these]
       }
-      log10.min.vt <- floor(log10(min(unlist(keep.Vts))))
-      log10.max.vt <- ceiling(log10(max(unlist(keep.Vts))))
-      min.vt <- 10^log10.min.vt
-      max.vt <- 10^log10.max.vt
-      my.tick.pos <- 10^(log10.min.vt:log10.max.vt)
       plot(
         NA ,
         type = 'l',
         bty = 'n' ,
         xlim = c(0, max.pl) ,
-        ylim = c(min.vt, max.vt) ,
-        log = 'y' ,
+        ylim = c(1, 3) ,
         yaxt = 'n' ,
         xaxt = 'n',
         xlab = '',
         ylab = ''
       )
       axis(2,
-           at = my.tick.pos)
+           at = c(0,1,2))
       axis(1,
            at = c(0, 0.004, 0.008),
            labels = c('0', '0.004', '0.008'))
       mtext(
         side = 2 ,
-        text = 'Total Liability Variance' ,
+        text = 'Prevalence inflation due to skew' ,
         line = 1.5,
         cex = 0.7,
       )
@@ -3712,7 +3717,7 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
       for (j in 1:length(prev)) {
         plot.these <- which(prev[[j]] > 0 & lambda[[j]] < 3 )
         lines(1 - my.gs[plot.these,j] ,
-              Vt[[j]][plot.these] ,
+              prev.inflate[[j]][plot.these] ,
               col = my.cols[j] ,
               lty = 1)
       }
