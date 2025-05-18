@@ -1,13 +1,13 @@
 #setwd('~/Dropbox/msdbPaper')
-dir_path <- "figures/paperFiguresForRealForRealThisTime"
-
-# Check if the directory exists
-if (!dir.exists(dir_path)) {
-  dir.create(dir_path, recursive = TRUE, showWarnings = TRUE)
-  message(paste("Created directory:", dir_path))
+fig_path <- "figures/paperFiguresForRealForRealThisTime/suppFigures/"
+if (!dir.exists(fig_path)) {
+  dir.create(fig_path, recursive = TRUE, showWarnings = TRUE)
+  message(paste("Created directory:", fig_path))
 } else {
-  message(paste("Directory already exists:", dir_path))
+  message(paste("Directory already exists:", fig_path))
 }
+
+
 #### Figure 1 ####
 {
     rm(list=ls())
@@ -2091,10 +2091,6 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
   y.max <- max(my.vars)
   my.cols <- wes_palette("Darjeeling1")
   
-  TAU <- 1
-  theta*integrate(function(x) 4*exp(-2*TAU*x*(1-x)),lower=0,upper=1/2)$value
-  
-  
   png(
     'figures/paperFiguresForRealForRealThisTime/suppFigures/flattening.png',
     height = 7 ,
@@ -2400,7 +2396,6 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
 #### Figure S_MeanCoefficient ####
 {
   rm(list=ls())
-  setwd('~/Dropbox/msdbPaper')
   library(wesanderson)
   balpha = function(a){
     ifelse(a < 100, (exp(2 * a) - 1) / (exp(2 * a) + 1), 1)
@@ -2659,7 +2654,7 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
 #### Figure S large effect grid ####
 {
   rm(list=ls())
-  setwd('~/Dropbox/msdbPaper')
+  ## setwd('~/Dropbox/msdbPaper')
   library(wesanderson)
   source('scripts/newSolveTwoEffect.R')
   bt <- c(0.1,0.5,0.9)
@@ -3314,7 +3309,7 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
         ylab = ''
       )
       axis(2,
-           at = c(0,1,2))
+           at = c(0,1,2,3))
       axis(1,
            at = c(0, 0.004, 0.008),
            labels = c('0', '0.004', '0.008'))
@@ -3408,20 +3403,15 @@ my.cols <- wes_palette("AsteroidCity3")[c(2,4)]
     }
     dev.off()
   }
-  
-  
-  
-  
 }
 
 #### Figure S large effect sims ####
-#### probably not a real S figure as I am currently working it into 5B (4/15/25)
 {
   my.list <- get(load('output/twoEffectSuppFigureSolns.Robj'))
   gs.theory <- my.list[[1]]
   prev.theory <- my.list[[2]]
   my.sims <-
-    get(load('resultsFiles/twoEffectPrevResultsTableN1000_old.Rdata'))
+    get(load('resultsFiles/twoEffectPrevResultsTableN1000.Rdata'))
   my.sims$L <- round(my.sims[, 'Ls'] + my.sims[, 'Ll'], -1)
   my.sims$gs <- my.sims[, 'Ls'] / my.sims$L
   split.sims <- split(my.sims, my.sims$L)
